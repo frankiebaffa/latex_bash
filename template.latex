@@ -1,0 +1,43 @@
+\documentclass[twocolumn, 10pt]{article}
+\usepackage[letterpaper, margin=0.5in]{geometry}
+% package used to adjust spacing before and after sections
+\usepackage{titlesec}
+% syntax: \titlespacing*{command}{left}{before}{after}
+% adjust section spacing
+\titlespacing*{\section}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+% adjust subsection spacing
+\titlespacing*{\subsection}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+% allows removal of spacing before / after itemize
+\usepackage{enumitem}
+% remove spacing before / after itemize
+\setlist{nolistsep}
+% better hyperlinks
+\usepackage{hyperref}
+% style hyperlinks
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+% better flushleft
+\usepackage[document]{ragged2e}
+% no page numbers
+\pagestyle{empty}
+\newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
+\newcommand{\lglinebreak}{\vspace{0.50\baselineskip}}
+\newcommand{\topheader}[1]{
+	{\Large {\bf #1}}\hfill
+
+	\smlinebreak
+}
+\newcommand{\secheader}[1]{
+	\lglinebreak
+
+	\topheader{#1}
+}
+\newcommand{\subheader}[1]{
+	\smlinebreak
+
+	{\large {\bf #1}}
+
+	\smlinebreak
+}
+\begin{document}
+
+\end{document}

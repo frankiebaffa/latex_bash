@@ -1,0 +1,22 @@
+#!/bin/bash
+# get script directory
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+# verify that 1 arg exists
+if [ -z "$1" ]
+then
+	echo "Include new file name as first argument."
+	exit 1
+fi
+# verify that file does not exist
+if [ -f "$1" ]
+then
+	echo "File exists."
+	exit 1
+fi
+# generate template file
+echo "Creating file \"$1\"."
+contents=$(cat $SCRIPT_DIR/template.latex)
+touch "$1"
+echo "$contents" >> "$1"
+echo "File created."
+exit 0
