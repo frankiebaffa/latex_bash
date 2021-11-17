@@ -1,0 +1,102 @@
+#!/bin/bash
+# function for displaying help
+function print_help {
+	help_msg=$(cat $SCRIPT_DIR/help.txt)
+	echo "$help_msg"
+}
+verbose=0
+function vprint {
+	if [ -z "$1" ]
+	then
+		echo "No message passed to vprint."
+		exit 1
+	elif [[ $verbose = 1 ]]
+	then
+		echo "$1"
+	fi
+}
+function throwerr {
+	if [ ! -z "$1" ]
+	then
+		echo "$1"
+	fi
+	exit 1
+}
+# get script directory
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+# available flags
+generate=0
+compile=0
+outfile=""
+# verify that 1 arg exists
+if [ -z "$1" ]
+then
+	print_help
+	exit 0
+fi
+# check args (match help printout)
+for i in "$@"
+do
+	case "$i" in
+		"-c"|"--compile")
+			vprint "Setting the --compile flag."
+			compile=1
+			;;
+		"-h"|"--help")
+			vprint "Printing help."
+			print_help
+			exit 0
+			;;
+		"-g"|"--generate")
+			vprint "Setting the --generate flag."
+			generate=1
+			;;
+		"-v"|"--verbose")
+			verbose=1
+			;;
+		*)
+			vprint "Attempting to set --outfile arg."
+			if [ -z "$outfile" ]
+			then
+				outfile="$i"
+			else
+				throwerr "Filename already defined as "$outfile", cannot specify twice."
+			fi
+			;;
+	esac
+done
+if [ -z "$outfile" ]
+then
+	throwerr "Filename was never defined"
+fi
+# include all action flags
+# default to generate
+if [ $compile -eq 0 ] && [ $generate -eq 0 ]
+then
+	vprint "No action defined, setting the --generate flag."
+	generate=1
+fi
+if [ $generate -eq 1 ]
+then
+	# verify that file does not exist
+	if [ -f "$outfile" ]
+	then
+		throwerr "File exists."
+		exit 1
+	fi
+	# generate template file
+	vprint "Creating file \"$outfile\"."
+	contents=$(cat $SCRIPT_DIR/template.latex)
+	touch "$outfile"
+	# append to file
+	echo "$contents" >> "$outfile"
+	vprint "File created."
+	exit 0
+elif [ $compile -eq 1 ]
+then
+	vprint "Compiling file \"$outfile\"."
+	# compile the given latex file
+	latex --output-format=pdf "$outfile"
+	vprint "PDF compiled"
+fi
+
