@@ -1,0 +1,11 @@
+latexdoc v0.0.1
+frankiebaffa<frankiebaffa@gmail.com>
+
+USEAGE:
+latexdoc [<ARG>...] -o=<FILENAME>
+
+ARGS:
+    -c | --compile    Compiles <FILENAME> into a .pdf
+    -h | --help       Print this message
+    -g | --generate   Generates <FILENAME> from the template file
+    -v | --verbose    Prints verbose messages while running
