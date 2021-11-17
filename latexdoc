@@ -133,6 +133,9 @@ then
 		if [ ! -f "$usetemplate" ]
 		then
 			throwerr $supressed "Template \"$usetemplate\" does not exist."
+		elif [ ! -f "$filename" ]
+		then
+			throwerr $supressed "File \"$filename\" does not exist."
 		fi
 		vprint $verbose "Inserting contents of \"$filename\" into \"$usetemplate\"."
 		template="$(cat $usetemplate)"
