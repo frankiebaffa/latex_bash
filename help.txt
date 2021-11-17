@@ -5,7 +5,8 @@ USEAGE:
 latexdoc [<ARG>...] -o=<FILENAME>
 
 ARGS:
-    -c | --compile    Compiles <FILENAME> into a .pdf
-    -h | --help       Print this message
-    -g | --generate   Generates <FILENAME> from the template file
-    -v | --verbose    Prints verbose messages while running
+    -c | --compile         Compiles <FILENAME> into a .pdf
+    -h | --help            Print this message
+    -g | --generate        Generates <FILENAME> from the template file
+    -s | --supress-errors  Supresses errors and does not print them to stdout
+    -v | --verbose         Prints verbose messages while running

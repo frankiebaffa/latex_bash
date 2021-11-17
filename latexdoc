@@ -15,8 +15,9 @@ function vprint {
 		echo "$1"
 	fi
 }
+supressed=0
 function throwerr {
-	if [ ! -z "$1" ]
+	if [ ! -z "$1" ] && [ $supressed -eq 0 ]
 	then
 		echo "$1"
 	fi
@@ -50,6 +51,10 @@ do
 		"-g"|"--generate")
 			vprint "Setting the --generate flag."
 			generate=1
+			;;
+		"-s"|"--supress-errors")
+			vprint "Setting the --supress-errors flag."
+			supressed=1
 			;;
 		"-v"|"--verbose")
 			verbose=1
@@ -95,6 +100,10 @@ then
 elif [ $compile -eq 1 ]
 then
 	vprint "Compiling file \"$outfile\"."
+	if ! command -v latex &> /dev/null
+	then
+		throwerr "Command \"latex\" could not be found."
+	fi
 	# compile the given latex file
 	latex --output-format=pdf "$outfile"
 	vprint "PDF compiled"
