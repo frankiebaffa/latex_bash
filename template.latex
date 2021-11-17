@@ -8,6 +8,10 @@
 \usepackage[useregional]{datetime2}
 % package used to adjust spacing before and after sections
 \usepackage{titlesec}
+% include images
+\usepackage{graphicx}
+% set graphics path
+\graphicspath{ {img/} }
 % syntax: \titlespacing*{command}{left}{before}{after}
 % adjust section spacing
 \titlespacing*{\section}{0pt}{0.25\baselineskip}{0.25\baselineskip}
