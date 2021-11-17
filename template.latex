@@ -1,5 +1,11 @@
 \documentclass[twocolumn, 10pt]{article}
 \usepackage[letterpaper, margin=0.5in]{geometry}
+% colors
+\usepackage{xcolor}
+% tabular environments
+\usepackage{tabularx}
+% better datetime
+\usepackage[useregional]{datetime2}
 % package used to adjust spacing before and after sections
 \usepackage{titlesec}
 % syntax: \titlespacing*{command}{left}{before}{after}
@@ -19,6 +25,8 @@
 \usepackage[document]{ragged2e}
 % no page numbers
 \pagestyle{empty}
+% set column seperation
+\setlength{\columnsep}{0.25in}
 \newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
 \newcommand{\lglinebreak}{\vspace{0.50\baselineskip}}
 \newcommand{\topheader}[1]{
