@@ -1,4 +1,16 @@
 \documentclass[twocolumn, 10pt]{article}
+% font awesome...for todolist
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{fontawesome5}
+% custom to-do list
+\usepackage{enumitem}
+\newlist{tod}{itemize}{2}
+\setlist[tod]{label=\faIcon[regular]{square}}
+\newlist{fin}{itemize}{2}
+\setlist[fin]{label=\faIcon[regular]{check-square}}
+\newlist{pro}{itemize}{2}
+\setlist[pro]{label=\faIcon[solid]{stop}}
 % adjustable margins
 \usepackage[letterpaper, margin=0.5in]{geometry}
 % indent first paragraph after section/subsection
