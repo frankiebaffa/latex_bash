@@ -1,5 +1,8 @@
 \documentclass[twocolumn, 10pt]{article}
+% adjustable margins
 \usepackage[letterpaper, margin=0.5in]{geometry}
+% indent first paragraph after section/subsection
+\usepackage{indentfirst}
 % colors
 \usepackage{xcolor}
 % tabular environments
@@ -25,8 +28,6 @@
 \usepackage{hyperref}
 % style hyperlinks
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
-% better flushleft
-\usepackage[document]{ragged2e}
 % no page numbers
 \pagestyle{empty}
 % set column seperation
@@ -46,14 +47,6 @@
 	\lglinebreak
 
 	\topheader{#1}
-}
-% inner headers
-\newcommand{\subheader}[1]{
-	\smlinebreak
-
-	{\large {\bf #1}}
-
-	\smlinebreak
 }
 \begin{document}
 
