@@ -31,18 +31,23 @@
 \pagestyle{empty}
 % set column seperation
 \setlength{\columnsep}{0.25in}
+% compact break
 \newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
+% larger break
 \newcommand{\lglinebreak}{\vspace{0.50\baselineskip}}
+% topmost page header
 \newcommand{\topheader}[1]{
 	{\Large {\bf #1}}\hfill
 
 	\smlinebreak
 }
+% other page headers
 \newcommand{\secheader}[1]{
 	\lglinebreak
 
 	\topheader{#1}
 }
+% inner headers
 \newcommand{\subheader}[1]{
 	\smlinebreak
 
