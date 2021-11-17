@@ -1,111 +1,130 @@
 #!/bin/bash
-# function for displaying help
-function print_help {
+function print_help { # {{{1
 	help_msg=$(cat $SCRIPT_DIR/help.txt)
 	echo "$help_msg"
 }
-verbose=0
-function vprint {
-	if [ -z "$1" ]
+function vprint { # {{{1
+	if [ -z "$2" ]
 	then
 		echo "No message passed to vprint."
 		exit 1
-	elif [[ $verbose = 1 ]]
+	elif [[ $1 = 1 ]]
 	then
-		echo "$1"
+		echo "$2"
 	fi
 }
-supressed=0
-function throwerr {
-	if [ ! -z "$1" ] && [ $supressed -eq 0 ]
+function throwerr { # {{{1
+	if [ ! -z "$2" ] && [ $1 -eq 0 ]
 	then
-		echo "$1"
+		echo "$2"
 	fi
 	exit 1
 }
+# Main {{{1
 # get script directory
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-# available flags
+# Flags/Args {{{2
+verbose=0
+supressed=0
 generate=0
 compile=0
 outfile=""
+outdir=""
 # verify that 1 arg exists
 if [ -z "$1" ]
 then
 	print_help
 	exit 0
 fi
+# Arg Parser {{{2
 # check args (match help printout)
 for i in "$@"
 do
-	case "$i" in
-		"-c"|"--compile")
-			vprint "Setting the --compile flag."
+	case $i in
+		# flags
+		-c|--compile)
+			vprint $verbose "Setting the --compile flag."
 			compile=1
 			;;
-		"-h"|"--help")
-			vprint "Printing help."
+		-h|--help)
+			vprint $verbose "Printing help."
 			print_help
 			exit 0
 			;;
-		"-g"|"--generate")
-			vprint "Setting the --generate flag."
+		-g|--generate)
+			vprint $verbose "Setting the --generate flag."
 			generate=1
 			;;
-		"-s"|"--supress-errors")
-			vprint "Setting the --supress-errors flag."
+		-s|--supress-errors)
+			vprint $verbose "Setting the --supress-errors flag."
 			supressed=1
 			;;
-		"-v"|"--verbose")
+		-v|--verbose)
 			verbose=1
 			;;
+		# args
+		-d=*|--output-dir=*)
+			vprint $verbose "Setting the --output-dir arg."
+			outdir="${i#*=}"
+			;;
+		# outfile
 		*)
-			vprint "Attempting to set --outfile arg."
+			vprint $verbose "Attempting to set --outfile arg."
 			if [ -z "$outfile" ]
 			then
 				outfile="$i"
 			else
-				throwerr "Filename already defined as "$outfile", cannot specify twice."
+				throwerr $supressed "Filename already defined as "$outfile", cannot specify twice."
 			fi
 			;;
 	esac
 done
+# Check $outfile {{{2
 if [ -z "$outfile" ]
 then
-	throwerr "Filename was never defined"
+	throwerr $supressed "Filename was never defined"
 fi
+# Set $outdir {{{2
+if [ -z "$outdir" ]
+then
+	outdir="$(dirname "$outfile")"
+	vprint $verbose "Setting --output-dir to default \"outdir\"."
+fi
+# Check/Set default behavior {{{2
 # include all action flags
 # default to generate
 if [ $compile -eq 0 ] && [ $generate -eq 0 ]
 then
-	vprint "No action defined, setting the --generate flag."
+	vprint $verbose "No action defined, setting the --generate flag."
 	generate=1
 fi
+# Run actions {{{2
 if [ $generate -eq 1 ]
 then
 	# verify that file does not exist
 	if [ -f "$outfile" ]
 	then
-		throwerr "File exists."
+		throwerr $supressed "File exists."
 		exit 1
 	fi
 	# generate template file
-	vprint "Creating file \"$outfile\"."
+	vprint $verbose "Creating file \"$outfile\"."
 	contents=$(cat $SCRIPT_DIR/template.latex)
 	touch "$outfile"
 	# append to file
 	echo "$contents" >> "$outfile"
-	vprint "File created."
+	vprint $verbose "File created."
 	exit 0
 elif [ $compile -eq 1 ]
 then
-	vprint "Compiling file \"$outfile\"."
+	vprint $verbose "Compiling file \"$outfile\"."
 	if ! command -v latex &> /dev/null
 	then
-		throwerr "Command \"latex\" could not be found."
+		throwerr $supressed "Command \"latex\" could not be found."
 	fi
 	# compile the given latex file
-	latex --output-format=pdf "$outfile"
-	vprint "PDF compiled"
+	latex --output-dir="$outdir" --output-format=pdf "$outfile"
+	vprint $verbose "PDF compiled"
 fi
-
+# Vim Folding {{{1
+# vim:fdm=marker

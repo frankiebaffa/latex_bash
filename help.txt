@@ -2,11 +2,16 @@ latexdoc v0.0.1
 frankiebaffa<frankiebaffa@gmail.com>
 
 USEAGE:
-latexdoc [<ARG>...] -o=<FILENAME>
+latexdoc [<FLAG>...] [<ARG>=<VALUE>...] -o=<FILENAME>
 
-ARGS:
+FLAGS:
     -c | --compile         Compiles <FILENAME> into a .pdf
-    -h | --help            Print this message
     -g | --generate        Generates <FILENAME> from the template file
+                           (default if flags/args are not empty)
+    -h | --help            Print this message
+                           (default if flags/args are empty)
     -s | --supress-errors  Supresses errors and does not print them to stdout
     -v | --verbose         Prints verbose messages while running
+ARGS:
+    -d=<VALUE> | --output-dir=<VALUE>  Sets the output directory for the latex command to <VALUE>
+                                       (default is the directory of <FILENAME>)

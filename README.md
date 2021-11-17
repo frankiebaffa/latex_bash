@@ -7,7 +7,7 @@ _ _ _
 ## Useage
 
 ```bash
-latex_pdf <filename>
+latex_pdf [<FLAG>...] [<ARG>=<VALUE>...] <filename>
 # where filename is the desired file you wish to create (with . extension)
 ```
 
