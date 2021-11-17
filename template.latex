@@ -49,5 +49,5 @@
 	\topheader{#1}
 }
 \begin{document}
-
+[[DOCUMENT]]
 \end{document}

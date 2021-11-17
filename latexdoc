@@ -1,9 +1,9 @@
 #!/bin/bash
-function print_help { # {{{1
+function print_help {
 	help_msg=$(cat $SCRIPT_DIR/help.txt)
 	echo "$help_msg"
 }
-function vprint { # {{{1
+function vprint {
 	if [ -z "$2" ]
 	then
 		echo "No message passed to vprint."
@@ -13,30 +13,28 @@ function vprint { # {{{1
 		echo "$2"
 	fi
 }
-function throwerr { # {{{1
+function throwerr {
 	if [ ! -z "$2" ] && [ $1 -eq 0 ]
 	then
 		echo "$2"
 	fi
 	exit 1
 }
-# Main {{{1
 # get script directory
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-# Flags/Args {{{2
 verbose=0
 supressed=0
 generate=0
 compile=0
 outfile=""
 outdir=""
+usetemplate=""
 # verify that 1 arg exists
 if [ -z "$1" ]
 then
 	print_help
 	exit 0
 fi
-# Arg Parser {{{2
 # check args (match help printout)
 for i in "$@"
 do
@@ -67,6 +65,10 @@ do
 			vprint $verbose "Setting the --output-dir arg."
 			outdir="${i#*=}"
 			;;
+		-u=*|--use-template=*)
+			vprint $verbose "Setting the --use-template arg."
+			usetemplate="$SCRIPT_DIR/${i#*=}.latex"
+			;;
 		# outfile
 		*)
 			vprint $verbose "Attempting to set --outfile arg."
@@ -74,23 +76,22 @@ do
 			then
 				outfile="$i"
 			else
-				throwerr $supressed "Filename already defined as "$outfile", cannot specify twice."
+				throwerr $supressed "Filename already defined as "$outfile.latex", cannot specify twice."
 			fi
 			;;
 	esac
 done
-# Check $outfile {{{2
 if [ -z "$outfile" ]
 then
 	throwerr $supressed "Filename was never defined"
 fi
-# Set $outdir {{{2
+filename="$outfile.latex"
+pdfname="$outfile.pdf"
 if [ -z "$outdir" ]
 then
-	outdir="$(dirname "$outfile")"
+	outdir="$(dirname "$filename")"
 	vprint $verbose "Setting --output-dir to default \"outdir\"."
 fi
-# Check/Set default behavior {{{2
 # include all action flags
 # default to generate
 if [ $compile -eq 0 ] && [ $generate -eq 0 ]
@@ -98,33 +99,66 @@ then
 	vprint $verbose "No action defined, setting the --generate flag."
 	generate=1
 fi
-# Run actions {{{2
 if [ $generate -eq 1 ]
 then
 	# verify that file does not exist
-	if [ -f "$outfile" ]
+	if [ -f "$filename" ]
 	then
 		throwerr $supressed "File exists."
 		exit 1
 	fi
 	# generate template file
-	vprint $verbose "Creating file \"$outfile\"."
-	contents=$(cat $SCRIPT_DIR/template.latex)
-	touch "$outfile"
+	vprint $verbose "Creating file \"$filename\"."
+	contents="$(cat $SCRIPT_DIR/template.latex)"
+	# remove placeholder
+	contents="${contents/"[[DOCUMENT]]"/""}"
+	touch "$filename"
 	# append to file
-	echo "$contents" >> "$outfile"
+	echo "$contents" >> "$filename"
 	vprint $verbose "File created."
 	exit 0
 elif [ $compile -eq 1 ]
 then
-	vprint $verbose "Compiling file \"$outfile\"."
 	if ! command -v latex &> /dev/null
 	then
 		throwerr $supressed "Command \"latex\" could not be found."
 	fi
-	# compile the given latex file
-	latex --output-dir="$outdir" --output-format=pdf "$outfile"
-	vprint $verbose "PDF compiled"
+	if [ -z "$usetemplate" ]
+	then
+		vprint $verbose "Compiling file \"$filename\"."
+		# compile the given latex file
+		latex --output-dir="$outdir" --output-format=pdf "$filename" &&
+			vprint $verbose "PDF compiled."
+	else
+		if [ ! -f "$usetemplate" ]
+		then
+			throwerr $supressed "Template \"$usetemplate\" does not exist."
+		fi
+		vprint $verbose "Inserting contents of \"$filename\" into \"$usetemplate\"."
+		template="$(cat $usetemplate)"
+		contents="$(cat $filename)"
+		final="${template/"[[DOCUMENT]]"/"$contents"}"
+		vprint $verbose "Saving final contents to temp file."
+		tmp_name="${filename/"$outdir/"/""}"
+		tmp_name="tmp.$tmp_name"
+		tmp_path="$outdir/$tmp_name"
+		tmp_pdf_name="${pdfname/"$outdir/"/""}"
+		tmp_pdf_name="tmp.$tmp_pdf_name"
+		tmp_pdf_path="$outdir/$tmp_pdf_name"
+		if [ -f "$tmp_path" ] || [ -d "$tmp_path" ]
+		then
+			throwerr $supressed "Temporary file path \"$tmp_path\" already exists."
+		fi
+		vprint $verbose "Saving contents to temp file \"$tmp_path\"."
+		echo "$final" > "$tmp_path"
+		vprint $verbose "Compiling PDF from temp file."
+		latex --output-dir="$outdir" --output-format=pdf "$tmp_path" &&
+			vprint $verbose "PDF compiled."
+		vprint $verbose "Removing temp file \"$tmp_name\"."
+		rm "$tmp_path" &&
+			vprint $verbose "Removed."
+		vprint $verbose "Renaming PDF."
+		mv "$tmp_pdf_path" "$pdfname" &&
+			vprint $verbose "Complete."
+	fi
 fi
-# Vim Folding {{{1
-# vim:fdm=marker

@@ -3,6 +3,12 @@ frankiebaffa<frankiebaffa@gmail.com>
 
 USEAGE:
 latexdoc [<FLAG>...] [<ARG>=<VALUE>...] -o=<FILENAME>
+where
+    <FILENAME> does not include the ".latex" extension,
+    <FILENAME> references a file with a ".latex" extension,
+    <FLAG> refernces a given flag below,
+    <ARG> references a given arg below,
+    <VALUE> is valid for the given argument
 
 FLAGS:
     -c | --compile         Compiles <FILENAME> into a .pdf
@@ -13,5 +19,9 @@ FLAGS:
     -s | --supress-errors  Supresses errors and does not print them to stdout
     -v | --verbose         Prints verbose messages while running
 ARGS:
-    -d=<VALUE> | --output-dir=<VALUE>  Sets the output directory for the latex command to <VALUE>
-                                       (default is the directory of <FILENAME>)
+    -d=<VALUE> | --output-dir=<VALUE>    Sets the output directory for the latex
+                                         command to <VALUE>
+                                         (default is the directory of <FILENAME>)
+    -u=<VALUE> | --use-template=<VALUE>  Alters the functionality of compile to
+                                         insert the contents of <FILENAME> into
+                                         the begin{document} block of <VALUE>
