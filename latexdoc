@@ -140,12 +140,12 @@ then
 		vprint $verbose "Inserting contents of \"$filename\" into \"$usetemplate\"."
 		template="$(cat $usetemplate)"
 		contents="$(cat $filename)"
-		final="${template/"[[DOCUMENT]]"/"$contents"}"
+		final="${template/"[[DOCUMENT]]"/$contents}"
 		vprint $verbose "Saving final contents to temp file."
-		tmp_name="${filename/"$outdir/"/""}"
+		tmp_name="${filename/"$outdir\/"/""}"
 		tmp_name="tmp.$tmp_name"
 		tmp_path="$outdir/$tmp_name"
-		tmp_pdf_name="${pdfname/"$outdir/"/""}"
+		tmp_pdf_name="${pdfname/"$outdir\/"/""}"
 		tmp_pdf_name="tmp.$tmp_pdf_name"
 		tmp_pdf_path="$outdir/$tmp_pdf_name"
 		if [ -f "$tmp_path" ] || [ -d "$tmp_path" ]
@@ -158,8 +158,8 @@ then
 		latex --output-dir="$outdir" --output-format=pdf "$tmp_path" &&
 			vprint $verbose "PDF compiled."
 		vprint $verbose "Removing temp file \"$tmp_name\"."
-		rm "$tmp_path" &&
-			vprint $verbose "Removed."
+		#rm "$tmp_path" &&
+		#	vprint $verbose "Removed."
 		vprint $verbose "Renaming PDF."
 		mv "$tmp_pdf_path" "$pdfname" &&
 			vprint $verbose "Complete."
