@@ -1,16 +1,22 @@
+% document class: {{{1
 \documentclass[twocolumn, 10pt]{article}
+% include \paragraph and \subparagraph in table of contents
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+% custom to-do list setup: {{{1
 % font awesome...for todolist
 \usepackage[T1]{fontenc}
 \usepackage{babel}
 \usepackage{fontawesome5}
 % custom to-do list
 \usepackage{enumitem}
-\newlist{tod}{itemize}{2}
+\newlist{tod}{itemize}{4}
 \setlist[tod]{label=\faIcon[regular]{square}}
-\newlist{fin}{itemize}{2}
+\newlist{fin}{itemize}{4}
 \setlist[fin]{label=\faIcon[regular]{check-square}}
-\newlist{pro}{itemize}{2}
+\newlist{pro}{itemize}{4}
 \setlist[pro]{label=\faIcon[solid]{stop}}
+% misc: {{{1
 % adjustable margins
 \usepackage[letterpaper, margin=0.5in]{geometry}
 % indent first paragraph after section/subsection
@@ -27,23 +33,56 @@
 \usepackage{graphicx}
 % set graphics path
 \graphicspath{ {img/} }
+% better hyperlinks
+\usepackage{hyperref}
+% style hyperlinks
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+% spacing adjustments: {{{1
 % syntax: \titlespacing*{command}{left}{before}{after}
 % adjust section spacing
 \titlespacing*{\section}{0pt}{0.25\baselineskip}{0.25\baselineskip}
 % adjust subsection spacing
 \titlespacing*{\subsection}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+% adjust subsubsection spacing
+\titlespacing*{\subsubsection}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+% adjust paragraph spacing
+\titlespacing*{\paragraph}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+% adjust subparagraph spacing
+\titlespacing*{\subparagraph}{0pt}{0.25\baselineskip}{0.25\baselineskip}
 % allows removal of spacing before / after itemize
 \usepackage{enumitem}
 % remove spacing before / after itemize
 \setlist{nolistsep}
-% better hyperlinks
-\usepackage{hyperref}
-% style hyperlinks
-\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+% code blocks: {{{1
+\usepackage{listings}
+\usepackage{listings-rust}
+\usepackage{color}
+% define colors
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+% configure code blocks
+\lstset{frame=tb,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+% page setup: {{{1
 % no page numbers
 \pagestyle{empty}
 % set column seperation
 \setlength{\columnsep}{0.25in}
+% custom commands: {{{1
 % compact break
 \newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
 % larger break
@@ -57,9 +96,11 @@
 % other page headers
 \newcommand{\secheader}[1]{
 	\lglinebreak
-
 	\topheader{#1}
 }
+% document: {{{1
 \begin{document}
 [[DOCUMENT]]
 \end{document}
+% folding: {{{1
+% vim:fdm=marker

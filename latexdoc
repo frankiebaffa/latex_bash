@@ -26,6 +26,7 @@ verbose=0
 supressed=0
 generate=0
 compile=0
+update=0
 outfile=""
 outdir=""
 usetemplate=""
@@ -56,6 +57,10 @@ do
 		-s|--supress-errors)
 			vprint $verbose "Setting the --supress-errors flag."
 			supressed=1
+			;;
+		-u|--update)
+			vprint $verbose "Setting the --update flag."
+			update=1
 			;;
 		-v|--verbose)
 			verbose=1
@@ -119,10 +124,32 @@ then
 	exit 0
 elif [ $compile -eq 1 ]
 then
+	# update
+	if [ $update -eq 1 ]
+	then
+		# check for git command
+		if ! command -v git &> /dev/null
+		then
+			throwerr $supressed "Command \"git\" could not be found."
+		fi
+		vprint $verbose "Updating submodules (packages)"
+		git submodule update --init --recursive
+	fi
+	# check for latex command
 	if ! command -v latex &> /dev/null
 	then
 		throwerr $supressed "Command \"latex\" could not be found."
 	fi
+	# check for texhash command
+	if ! command -v texhash &> /dev/null
+	then
+		throwerr $supressed "Command \"texhash\" not found, you may need to install latex."
+	fi
+	# set custom latex package directories
+	# empty dir at beginning (::) is on purpose
+	export TEXINPUTS=::$SCRIPT_DIR/packages/listings-rust
+	# initialize custom packages
+	texhash
 	if [ -z "$usetemplate" ]
 	then
 		vprint $verbose "Compiling file \"$filename\"."
@@ -158,8 +185,8 @@ then
 		latex --output-dir="$outdir" --output-format=pdf "$tmp_path" &&
 			vprint $verbose "PDF compiled."
 		vprint $verbose "Removing temp file \"$tmp_name\"."
-		#rm "$tmp_path" &&
-		#	vprint $verbose "Removed."
+		rm "$tmp_path" &&
+			vprint $verbose "Removed."
 		vprint $verbose "Renaming PDF."
 		mv "$tmp_pdf_path" "$pdfname" &&
 			vprint $verbose "Complete."

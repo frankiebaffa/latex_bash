@@ -17,6 +17,7 @@ FLAGS:
     -h | --help            Print this message
                            (default if flags/args are empty)
     -s | --supress-errors  Supresses errors and does not print them to stdout
+    -u | --update          Updates external packages before compilation
     -v | --verbose         Prints verbose messages while running
 ARGS:
     -d=<VALUE> | --output-dir=<VALUE>    Sets the output directory for the latex
