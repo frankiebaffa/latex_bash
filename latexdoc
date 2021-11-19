@@ -22,11 +22,14 @@ function throwerr {
 }
 # get script directory
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+# flags
 verbose=0
 supressed=0
+force=0
 generate=0
 compile=0
 update=0
+keepout=0
 outfile=""
 outdir=""
 usetemplate=""
@@ -45,6 +48,10 @@ do
 			vprint $verbose "Setting the --compile flag."
 			compile=1
 			;;
+		-f|--force)
+			vprint $verbose "Setting the --force flag."
+			force=1
+			;;
 		-h|--help)
 			vprint $verbose "Printing help."
 			print_help
@@ -54,11 +61,15 @@ do
 			vprint $verbose "Setting the --generate flag."
 			generate=1
 			;;
+		-k|--keep-outfile)
+			vprint $verbose "Setting the --keep-outfile flag."
+			keepout=1
+			;;
 		-s|--supress-errors)
 			vprint $verbose "Setting the --supress-errors flag."
 			supressed=1
 			;;
-		-u|--update)
+		-p|--update)
 			vprint $verbose "Setting the --update flag."
 			update=1
 			;;
@@ -81,7 +92,7 @@ do
 			then
 				outfile="$i"
 			else
-				throwerr $supressed "Filename already defined as "$outfile.latex", cannot specify twice."
+				throwerr $supressed "Filename already defined as "$outfile", cannot specify twice."
 			fi
 			;;
 	esac
@@ -90,13 +101,7 @@ if [ -z "$outfile" ]
 then
 	throwerr $supressed "Filename was never defined"
 fi
-filename="$outfile.latex"
-pdfname="$outfile.pdf"
-if [ -z "$outdir" ]
-then
-	outdir="$(dirname "$filename")"
-	vprint $verbose "Setting --output-dir to default \"outdir\"."
-fi
+f_name="$outfile"
 # include all action flags
 # default to generate
 if [ $compile -eq 0 ] && [ $generate -eq 0 ]
@@ -107,23 +112,41 @@ fi
 if [ $generate -eq 1 ]
 then
 	# verify that file does not exist
-	if [ -f "$filename" ]
+	if [ -f "$f_name" ] && [ $force -eq 0 ]
 	then
 		throwerr $supressed "File exists."
 		exit 1
 	fi
 	# generate template file
-	vprint $verbose "Creating file \"$filename\"."
+	vprint $verbose "Creating file \"$f_name\"."
 	contents="$(cat $SCRIPT_DIR/template.latex)"
 	# remove placeholder
 	contents="${contents/"[[DOCUMENT]]"/""}"
-	touch "$filename"
+	touch "$f_name"
 	# append to file
-	echo "$contents" >> "$filename"
+	echo "$contents" >> "$f_name"
 	vprint $verbose "File created."
 	exit 0
 elif [ $compile -eq 1 ]
 then
+	if [ ! -f "$f_name" ]
+	then
+		throwerr $supressed "File \"$f_name\" does not exist."
+	fi
+	f_base="${f_name%.*}"
+	f_ext="${f_name##*.}"
+	f_name_only="${f_name##*/}"
+	f_name_short="${f_name_only/.$f_ext/}"
+	f_full=$(readlink -f $f_name)
+	pdfname="$f_base.pdf"
+	if [ -z "$outdir" ]
+	then
+		outdir="${f_full/\/$f_name_only/}"
+		vprint $verbose "Setting --output-dir to default \"$outdir\"."
+	fi
+	f_name_only="${f_full/$outdir\//}"
+	tmp_full="$outdir/tmp.$f_name_only"
+	tmp_pdf="$outdir/tmp.$f_name_short.pdf"
 	# update
 	if [ $update -eq 1 ]
 	then
@@ -152,43 +175,52 @@ then
 	texhash
 	if [ -z "$usetemplate" ]
 	then
-		vprint $verbose "Compiling file \"$filename\"."
+		vprint $verbose "Compiling file \"$f_full\"."
 		# compile the given latex file
-		latex --output-dir="$outdir" --output-format=pdf "$filename" &&
+		latex --output-dir="$outdir" --output-format=pdf "$f_full" &&
 			vprint $verbose "PDF compiled."
 	else
 		if [ ! -f "$usetemplate" ]
 		then
 			throwerr $supressed "Template \"$usetemplate\" does not exist."
-		elif [ ! -f "$filename" ]
-		then
-			throwerr $supressed "File \"$filename\" does not exist."
 		fi
-		vprint $verbose "Inserting contents of \"$filename\" into \"$usetemplate\"."
+		vprint $verbose "Inserting contents of \"$f_full\" into \"$usetemplate\"."
 		template="$(cat $usetemplate)"
-		contents="$(cat $filename)"
+		contents="$(cat $f_full)"
 		final="${template/"[[DOCUMENT]]"/$contents}"
 		vprint $verbose "Saving final contents to temp file."
-		tmp_name="${filename/"$outdir\/"/""}"
-		tmp_name="tmp.$tmp_name"
-		tmp_path="$outdir/$tmp_name"
-		tmp_pdf_name="${pdfname/"$outdir\/"/""}"
-		tmp_pdf_name="tmp.$tmp_pdf_name"
-		tmp_pdf_path="$outdir/$tmp_pdf_name"
-		if [ -f "$tmp_path" ] || [ -d "$tmp_path" ]
+		# if $tmp_full is a directory and $force
+		if [ $force -eq 1 ] && [ -d "$tmp_full" ]
 		then
-			throwerr $supressed "Temporary file path \"$tmp_path\" already exists."
+			throwerr $supressed "Cannot force; output file name is the same as \
+				an existing directory."
+		elif [ $force -eq 1 ] && [ -f "$tmp_full" ]
+		then
+			vprint $verbose "$tmp_full exists and will be overwritten."
+		# if not force and $tmp_full is a file or directory
+		elif [ $force -eq 0 ]
+		then
+			if [ -f "$tmp_full" ] || [ -d "$tmp_full" ]
+			then
+				throwerr $supressed "Temporary file path \"$tmp_full\" already exists."
+			fi
 		fi
-		vprint $verbose "Saving contents to temp file \"$tmp_path\"."
-		echo "$final" > "$tmp_path"
+		vprint $verbose "Saving contents to temp file \"$tmp_full\"."
+		echo "$final" > "$tmp_full"
 		vprint $verbose "Compiling PDF from temp file."
-		latex --output-dir="$outdir" --output-format=pdf "$tmp_path" &&
+		latex --output-dir="$outdir" --output-format=pdf "$tmp_full" &&
 			vprint $verbose "PDF compiled."
-		vprint $verbose "Removing temp file \"$tmp_name\"."
-		rm "$tmp_path" &&
-			vprint $verbose "Removed."
+		# check keepout
+		if [ $keepout -eq 0 ]
+		then
+			vprint $verbose "Removing temp file \"$tmp_full\"."
+			rm "$tmp_full" &&
+				vprint $verbose "Removed."
+		else
+			vprint $verbose "Keeping outfile \"$tmp_full\""
+		fi
 		vprint $verbose "Renaming PDF."
-		mv "$tmp_pdf_path" "$pdfname" &&
+		mv "$tmp_pdf" "$pdfname" &&
 			vprint $verbose "Complete."
 	fi
 fi

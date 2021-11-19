@@ -1,0 +1,9 @@
+\section{Use Template Test}
+\subsection{Command}
+\par\noindent This document is compiled by the command following command:
+\begin{minipage}{\linewidth}
+	\begin{lstlisting}[language=bash, style=boxed]
+.././latexdoc -c -u=template ./usetemplate.test.latex
+	\end{lstlisting}
+\end{minipage}
+
