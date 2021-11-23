@@ -23,6 +23,7 @@ function throwerr {
 # get script directory
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 # flags
+columncount=1
 verbose=0
 supressed=0
 force=0
@@ -73,6 +74,10 @@ do
 			vprint $verbose "Setting the --update flag."
 			update=1
 			;;
+		-t|--twocolumns)
+			vprint $verbose "Setting the --twocolumns flag."
+			columncount=2
+			;;
 		-v|--verbose)
 			verbose=1
 			;;
@@ -121,7 +126,13 @@ then
 	vprint $verbose "Creating file \"$f_name\"."
 	contents="$(cat $SCRIPT_DIR/template.latex)"
 	# remove placeholder
-	contents="${contents/"[[DOCUMENT]]"/""}"
+	contents="${contents/"XxDOCUMENTxX"/""}"
+	if [ $columncount -eq 2 ]
+	then
+		contents="${contents/"XxCOLUMNCOUNTxX"/"twocolumn"}"
+	else
+		contents="${contents/"XxCOLUMNCOUNTxX"/"onecolumn"}"
+	fi
 	touch "$f_name"
 	# append to file
 	echo "$contents" >> "$f_name"
@@ -187,7 +198,13 @@ then
 		vprint $verbose "Inserting contents of \"$f_full\" into \"$usetemplate\"."
 		template="$(cat $usetemplate)"
 		contents="$(cat $f_full)"
-		final="${template/"[[DOCUMENT]]"/$contents}"
+		final="${template/"XxDOCUMENTxX"/$contents}"
+		if [ $columncount -eq 2 ]
+		then
+			final="${final/"XxCOLUMNCOUNTxX"/"twocolumn"}"
+		else
+			final="${final/"XxCOLUMNCOUNTxX"/"onecolumn"}"
+		fi
 		vprint $verbose "Saving final contents to temp file."
 		# if $tmp_full is a directory and $force
 		if [ $force -eq 1 ] && [ -d "$tmp_full" ]

@@ -1,9 +1,12 @@
 % document class: {{{1
-\documentclass[twocolumn, 10pt]{article}
+% -----------------------------------------------------------------------------
+\documentclass[XxCOLUMNCOUNTxX, 10pt]{article}
 % include \paragraph and \subparagraph in table of contents
 \setcounter{tocdepth}{5}
 \setcounter{secnumdepth}{5}
+% =============================================================================
 % custom to-do list setup: {{{1
+% -----------------------------------------------------------------------------
 % font awesome...for todolist
 \usepackage[T1]{fontenc}
 \usepackage{babel}
@@ -11,13 +14,15 @@
 % custom to-do list
 \usepackage{enumitem}
 \newlist{tod}{itemize}{4}
-\setlist[tod]{label=\faIcon[regular]{square}}
+\setlist[tod]{label={\small\faIcon[regular]{square}}}
 \newlist{fin}{itemize}{4}
-\setlist[fin]{label=\faIcon[regular]{check-square}}
+\setlist[fin]{label={\small\faIcon[regular]{check-square}}}
 \newlist{pro}{itemize}{4}
-\setlist[pro]{label=\faIcon[solid]{stop}}
+\setlist[pro]{label={\small\faIcon[solid]{stop}}}
+% =============================================================================
 % misc: {{{1
 % adjustable margins
+% -----------------------------------------------------------------------------
 \usepackage[letterpaper, margin=0.5in]{geometry}
 % indent first paragraph after section/subsection
 \usepackage{indentfirst}
@@ -37,7 +42,9 @@
 \usepackage{hyperref}
 % style hyperlinks
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+% =============================================================================
 % spacing adjustments: {{{1
+% -----------------------------------------------------------------------------
 % syntax: \titlespacing*{command}{left}{before}{after}
 % adjust section spacing
 \titlespacing*{\section}{0pt}{0.25\baselineskip}{0.25\baselineskip}
@@ -53,7 +60,9 @@
 \usepackage{enumitem}
 % remove spacing before / after itemize
 \setlist{nolistsep}
+% =============================================================================
 % code blocks: {{{1
+% -----------------------------------------------------------------------------
 \usepackage{listings}
 \usepackage{listings-rust}
 \usepackage{color}
@@ -77,12 +86,16 @@
 	breakatwhitespace=true,
 	tabsize=3
 }
+% =============================================================================
 % page setup: {{{1
+% -----------------------------------------------------------------------------
 % no page numbers
 \pagestyle{empty}
 % set column seperation
 \setlength{\columnsep}{0.25in}
+% =============================================================================
 % custom commands: {{{1
+% -----------------------------------------------------------------------------
 % compact break
 \newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
 % larger break
@@ -98,9 +111,13 @@
 	\lglinebreak
 	\topheader{#1}
 }
+% =============================================================================
 % document: {{{1
+% -----------------------------------------------------------------------------
 \begin{document}
-[[DOCUMENT]]
+XxDOCUMENTxX
 \end{document}
+% =============================================================================
 % folding: {{{1
+% -----------------------------------------------------------------------------
 % vim:fdm=marker
