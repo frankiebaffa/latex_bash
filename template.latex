@@ -1,11 +1,11 @@
-% document class: {{{1
+% document class:
 % -----------------------------------------------------------------------------
 \documentclass[XxCOLUMNCOUNTxX, 10pt]{article}
 % include \paragraph and \subparagraph in table of contents
 \setcounter{tocdepth}{5}
 \setcounter{secnumdepth}{5}
 % =============================================================================
-% custom to-do list setup: {{{1
+% custom to-do list setup:
 % -----------------------------------------------------------------------------
 % font awesome...for todolist
 \usepackage[T1]{fontenc}
@@ -20,7 +20,7 @@
 \newlist{pro}{itemize}{4}
 \setlist[pro]{label={\small\faIcon[solid]{stop}}}
 % =============================================================================
-% misc: {{{1
+% misc:
 % adjustable margins
 % -----------------------------------------------------------------------------
 \usepackage[letterpaper, margin=0.5in]{geometry}
@@ -43,7 +43,7 @@
 % style hyperlinks
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
 % =============================================================================
-% spacing adjustments: {{{1
+% spacing adjustments:
 % -----------------------------------------------------------------------------
 % syntax: \titlespacing*{command}{left}{before}{after}
 % adjust section spacing
@@ -60,8 +60,10 @@
 \usepackage{enumitem}
 % remove spacing before / after itemize
 \setlist{nolistsep}
+% remove spacing inside itemize
+\setlist{noitemsep}
 % =============================================================================
-% code blocks: {{{1
+% code blocks:
 % -----------------------------------------------------------------------------
 \usepackage{listings}
 \usepackage{listings-rust}
@@ -87,14 +89,14 @@
 	tabsize=3
 }
 % =============================================================================
-% page setup: {{{1
+% page setup:
 % -----------------------------------------------------------------------------
 % no page numbers
 \pagestyle{empty}
 % set column seperation
 \setlength{\columnsep}{0.25in}
 % =============================================================================
-% custom commands: {{{1
+% custom commands:
 % -----------------------------------------------------------------------------
 % compact break
 \newcommand{\smlinebreak}{\vspace{0.25\baselineskip}}
@@ -111,13 +113,22 @@
 	\lglinebreak
 	\topheader{#1}
 }
+% main page header (for 2 column docs)
+\newcommand{\pageheader}[2]{
+	\twocolumn[{%
+		{\em{\small #1}}
+		\hfill
+		{\Large #2}
+		\hfill
+		{\em{\small\DTMtoday}}
+		\smlinebreak
+		\hrule
+		\lglinebreak
+	}]
+}
 % =============================================================================
-% document: {{{1
+% document:
 % -----------------------------------------------------------------------------
 \begin{document}
 XxDOCUMENTxX
 \end{document}
-% =============================================================================
-% folding: {{{1
-% -----------------------------------------------------------------------------
-% vim:fdm=marker
